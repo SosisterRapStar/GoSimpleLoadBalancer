@@ -1,0 +1,14 @@
+listen: "0.0.0.0:3001"
+
+balance: "random"
+
+healthcheck:
+  period: 10
+  responseTimeoutSeconds: 10
+  maxRetries: 3
+  timeOutStep: 2
+  endpoint: "/health"
+
+upstreams:
+  - "localhost:8000"
+  - "localhost:8001"

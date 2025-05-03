@@ -3,10 +3,6 @@ listen: "0.0.0.0:3002"
 balance: "random"
 
 healthcheck:
-  period: 10
-  responseTimeoutSeconds: 10
-  maxRetries: 3
-  timeOutStep: 2
   endpoint: "/health"
 
 upstreams:

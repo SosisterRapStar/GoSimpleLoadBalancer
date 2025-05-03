@@ -5,12 +5,24 @@ Open /loadbalancer
 * Use your config and mount it in docker-compose
 * Run docker-compose 
 
+*Example of docker-compose*:
+```yaml
+services:
+  gosimpleloadbalancer:
+    build: . / <builded image from /loadbalancer/Dockerfile>
+    volumes:
+      - ./config/config.yaml:/gosimplebalancer/config.yaml
+    ports:
+      - "3002:3002"
+    restart: unless-stopped
+```
+
 ## Local
 * Use go install or go build to compose binary
 * Create a *config.yaml* or *<your_file_name>.yaml* and save its path to `BALANCER_CONFIG_PATH` environment variable 
 * Start binary
 
-## Config file
+# Config file
 This is the common look of the config file
 
 ```yaml
@@ -45,3 +57,6 @@ Use params for healthcheck here. You can also omit all the fields except *endpoi
 ## Logs
 Balancer pushes logs to stdout so tou can use
 * **docker logs <cont_name>** to see logs
+
+# Test Apps
+You can use some apps from this directory to test loadbalancer.

@@ -9,7 +9,7 @@ Open /loadbalancer
 ```yaml
 services:
   gosimpleloadbalancer:
-    build: . / <builded image from /loadbalancer/Dockerfile>
+    build: . # or <name of your builded image from /loadbalancer/Dockerfile>
     volumes:
       - ./config/config.yaml:/gosimplebalancer/config.yaml
     ports:

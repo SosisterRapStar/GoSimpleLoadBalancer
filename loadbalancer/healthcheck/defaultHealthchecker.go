@@ -111,16 +111,15 @@ func (h *DefaultHealthChecker) StartCheck(ctx context.Context, updates chan<- *c
 		for {
 			select {
 			case <-ctx.Done():
-				logger.Debug("Close healthcheck go1")
+				logger.Debug("Close healthcheck demultiplexor")
 				return
 			case status := <-outChanForCheck:
 				h.timeoutAlgo(status.Index, status.IsAvailable)
 				updates <- status
 				logchan <- HealthLogStruct{
-					Upstream: h.upstreamName,
-					Addr:     h.backendInfo[status.Index].Addr,
-					Url:      h.backendInfo[status.Index].ProxyUrl.String(),
-					IsAlive:  status.IsAvailable,
+					Addr:    h.backendInfo[status.Index].Addr,
+					Url:     h.backendInfo[status.Index].ProxyUrl.String(),
+					IsAlive: status.IsAvailable,
 				}
 			}
 		}
@@ -132,7 +131,7 @@ loop:
 	for {
 		select {
 		case <-ctx.Done():
-			logger.Debug("Close healthcheck go2")
+			logger.Debug("Close healthcheck multiplexor")
 			break loop
 		case <-ticker.C:
 			for i, backend := range h.backendInfo {

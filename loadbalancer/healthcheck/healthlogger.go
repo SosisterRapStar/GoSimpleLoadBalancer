@@ -1,13 +1,8 @@
 package healthcheck
 
-import (
-	"encoding/json"
-)
-
 // отдельная горутина для выноса логики логирования статусов и информации
 
 type HealthLogStruct struct {
-	Upstream string `json:"Upstream"`
 	// core.BackendInfo
 	Url     string `json:"ProxyURL"`
 	Addr    string `json:"Address"`
@@ -15,15 +10,19 @@ type HealthLogStruct struct {
 }
 
 func HealthLog(toLog HealthLogStruct) {
-	jsonStr, err := json.Marshal(toLog)
-	if err != nil {
-		logger.Info("Error occured during logging backend status")
-	}
-	logger.Info(string(jsonStr))
+	// jsonStr, err := json.Marshal(toLog)
+	// if err != nil {
+	// 	logger.Info("Error occured during logging backend status")
+	// }
+	logger.Info("backend status",
+		"Url", toLog.Url,
+		"Addr", toLog.Addr,
+		"IsAlive", toLog.IsAlive)
 }
 
 func StartHealthLogger(log <-chan HealthLogStruct) {
 	for logstr := range log {
 		HealthLog(logstr)
 	}
+	logger.Debug("Healthcheck logger closed")
 }

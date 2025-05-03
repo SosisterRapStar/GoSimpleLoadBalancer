@@ -1,0 +1,8 @@
+services:
+  gosimpleloadbalancer:
+    build: .
+    volumes:
+      - ./config/config.yaml:/gosimplebalancer/config.yaml
+    ports:
+      - "3002:3002"
+    restart: unless-stopped

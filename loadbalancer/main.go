@@ -20,8 +20,10 @@ var logger = logging.GetLogger()
 
 func main() {
 	c := &readers.Config{}
-	readers.ReadConfig(c)
-	fmt.Println(c)
+	err := readers.ReadConfig(c)
+	if err != nil {
+		log.Fatal(err)
+	}
 	if c.Listen == "" {
 		log.Fatal("You need to specify listen address")
 	}
@@ -32,7 +34,6 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	var backends []*core.Backend
-	fmt.Println(c.Upstreams)
 	for _, addr := range c.Upstreams {
 		backends = append(backends, core.NewBackend(addr, ""))
 	}
@@ -57,7 +58,6 @@ func main() {
 	}
 
 	updates := make(chan *core.HealthStatus)
-	defer close(updates)
 
 	go healthchecker.StartCheck(ctx, updates)
 	go upstream.BackendsMonitoring(ctx, updates)
@@ -80,13 +80,21 @@ func main() {
 
 	loadBalancer := NewLoadBalancer(upstream, lbAlgorithm, responseHeaderTimeout)
 
+	fmt.Println("Formed loadbalancer for upstreams:")
+	for _, b := range upstream.GetInfoAllBackends() {
+		fmt.Println(b.Addr)
+	}
+
 	server := NewServer(c.Listen, loadBalancer)
 	server.Start()
+
+	fmt.Println("Simple loadbalancer started")
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
-
+	logger.Debug("Closing main updates channel")
+	close(updates)
 	cancel()
 	logger.Info("Received Interrupt signal, started to shutdown gracefully")
 	gshutCtx, gshutClose := context.WithTimeout(context.Background(), 10*time.Second)

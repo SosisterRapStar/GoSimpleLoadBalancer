@@ -50,13 +50,12 @@ func (u *Upstream) IsAvailable(index int) bool {
 
 func (u *Upstream) GetBackendInfo(index int) BackendInfo {
 
-	u.backendlocks[index].RLock() // Используем RLock для чтения
+	u.backendlocks[index].RLock()
 	defer u.backendlocks[index].RUnlock()
 	b := u.backends[index]
 
 	return BackendInfo{
-		Addr: b.addr,
-		// NumOfCons:   b.numOfCons,
+		Addr:     b.addr,
 		ProxyUrl: b.proxyUrl,
 	}
 }
